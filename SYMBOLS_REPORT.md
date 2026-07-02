@@ -13,19 +13,21 @@ msdefender/
   binaries/
     ProgramFiles_WindowsDefender/      40 files (inbox x64 build)
     ProgramFiles_x86_WindowsDefender/  8 files (32-bit build)
-    Platform_4.18.26050.15-0/          56 files (updated build)
-    Drivers/                           4 kernel drivers .sys (v4.18.25080.5)
+    Platform_4.18.26050.15-0/          56 files (updated build) + Drivers/ (5 .sys incl ksld.sys)
+    Drivers/                           4 System32 kernel drivers .sys (v4.18.25080.5)
     Engine_1.1.26050.11/               mpengine.dll, mpengine_etw.dll
+    SecurityHealth/                    Windows Security frontend (3 .exe, v10.0.26100)
     System32/                          amsi.dll, amsiproxy.dll, smartscreen.exe, MPSSVC.dll, MpSigStub.exe
-  symbols/                             symsrv-format PDB store (55 PDBs)
+  symbols/                             symsrv-format PDB store (59 PDBs)
+  etw/                                 6 ETW provider manifests (.man, no symbols)
   SYMBOLS_REPORT.md
 ```
 
 ## Totals
-- Binaries copied : **115** files (`.dll`/`.exe`/`.sys`)
-- Distinct binary names : **66**
-- PDBs downloaded : **55** (every PDB the public server has for these exact files)
-- Names WITH public symbols : **47**
+- Binaries copied : **123** files (`.dll`/`.exe`/`.sys`)
+- Distinct binary names : **70**
+- PDBs downloaded : **59** (every PDB the public server has for these exact files)
+- Names WITH public symbols : **51**
 - Names WITHOUT public symbols : **19** (no public PDB exists, or resource-only DLL)
 
 ## How to use the symbols
@@ -42,7 +44,7 @@ downloaded PDB matches that specific build; the debugger silently ignores the
 non-matching copy. (This is why `symchk` reported 44 per-file "mismatched" lines
 even though 40 distinct names are covered.)
 
-## Binaries WITH public symbols (47 names)
+## Binaries WITH public symbols (51 names)
 AMMonitoringProvider.dll, ConfigSecurityPolicy.exe, DefenderCSP.dll, DirectML.dll,
 DlpUserAgent.exe, DsCoreFull.dll, endpointdlp.dll, MdeDiag.dll,
 Microsoft.Windows.AI.MachineLearning.dll, Microsoft.WindowsAppRuntime.Bootstrap.dll,
@@ -53,7 +55,8 @@ mpextms.exe, MpOAV.dll, MpProvider.dll, MpRtp.dll, MpSenseComm.dll, MpSvc.dll,
 MpUpdate.dll, MsMpCom.dll, MsMpEng.exe, NisSrv.exe, NpRep.dll, OfflineScannerShell.exe,
 onnxruntime.dll, onnxruntime_providers_shared.dll, ProtectionManagement.dll, shellext.dll,
 amsi.dll, amsiproxy.dll, smartscreen.exe, MPSSVC.dll,
-WdFilter.sys, WdBoot.sys, WdDevFlt.sys, WdNisDrv.sys
+WdFilter.sys, WdBoot.sys, WdDevFlt.sys, WdNisDrv.sys, ksld.sys,
+SecurityHealthService.exe, SecurityHealthHost.exe, SecurityHealthSystray.exe
 
 ## Binaries WITHOUT public symbols (19 names)
 mpengine.dll, mpengine_etw.dll, MpSigStub.exe,

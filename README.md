@@ -12,20 +12,25 @@ msdefender/
     ProgramFiles_WindowsDefender/   inbox build   (C:\Program Files\Windows Defender)
     Platform_4.18.26050.15-0/       updated engine (ProgramData\...\Platform\<ver>)
     ProgramFiles_x86_WindowsDefender/  32-bit Defender set (8 files)
-    Drivers/                        kernel drivers: WdFilter, WdBoot, WdDevFlt, WdNisDrv (.sys)
+    Platform_4.18.26050.15-0/Drivers/  platform-build drivers incl. ksld.sys (.sys)
+    Drivers/                        System32 kernel drivers: WdFilter, WdBoot, WdDevFlt, WdNisDrv (.sys)
     Engine_1.1.26050.11/            mpengine.dll, mpengine_etw.dll (scan engine, from Definition Updates)
+    SecurityHealth/                 Windows Security frontend: Service, Host, Systray (.exe)
     System32/                       amsi.dll, amsiproxy.dll, smartscreen.exe, MPSSVC.dll, MpSigStub.exe
-  symbols/                          symsrv-format PDB store (55 PDBs)
+  symbols/                          symsrv-format PDB store (59 PDBs)
+  etw/                              ETW provider manifests (Microsoft-Antimalware-*.man)
   SYMBOLS_REPORT.md                 per-binary symbol coverage (which got PDBs, which did not)
   README.md
 ```
 
-- 115 binaries total (`.dll`/`.exe`/`.sys`). Most Defender names ship in two builds
+- 123 binaries total (`.dll`/`.exe`/`.sys`). Most Defender names ship in two builds
   (inbox and updated engine) with different signatures, so they appear under both
   `binaries/` subfolders.
 - `symbols/` is a standard symbol-server store keyed by each PDB's GUID + age
-  (55 PDBs). Every PDB Microsoft publishes for these exact files has been fetched.
-- Of 66 distinct binary names, 47 have a public PDB; 19 do not (see below).
+  (59 PDBs). Every PDB Microsoft publishes for these exact files has been fetched.
+- Of 70 distinct binary names, 51 have a public PDB; 19 do not (see below).
+- `etw/` holds the 6 ETW provider manifests (XML) that define the Defender/Antimalware
+  ETW event schemas, provider GUIDs, and fields. No symbols apply to these.
 
 ## Source
 
@@ -34,8 +39,11 @@ msdefender/
 | Inbox binaries (x64) | `C:\Program Files\Windows Defender` |
 | Defender set (x86) | `C:\Program Files (x86)\Windows Defender` |
 | Engine binaries | `C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.26050.15-0` |
-| Kernel drivers | `C:\Windows\System32\drivers\Wd*.sys` (v4.18.25080.5) |
+| Kernel drivers (System32) | `C:\Windows\System32\drivers\Wd*.sys` (v4.18.25080.5) |
+| Kernel drivers (Platform) | `...\Platform\4.18.26050.15-0\Drivers\*.sys` incl. `ksld.sys` (v1.1.26051.3007) |
 | Scan engine | `C:\ProgramData\Microsoft\Windows Defender\Definition Updates\...` (mpengine v1.1.26050.11) |
+| Security frontend | `C:\Windows\System32\SecurityHealth{Service,Host,Systray}.exe` (v10.0.26100) |
+| ETW manifests | `...\Platform\4.18.26050.15-0\Microsoft-Antimalware-*.man` |
 | System32 (AMSI/SmartScreen/Firewall) | `amsi.dll`, `amsiproxy.dll`, `smartscreen.exe`, `MPSSVC.dll`, `MpSigStub.exe` |
 | Symbols | `https://msdl.microsoft.com/download/symbols` (via `symchk`) |
 
@@ -45,14 +53,15 @@ binaries are exact copies, unmodified.
 ## Symbol coverage
 
 `symchk` was run over the whole `binaries/` tree against the public server, so the
-store holds every PDB Microsoft publishes for these exact files. 47 of 66 distinct
+store holds every PDB Microsoft publishes for these exact files. 51 of 70 distinct
 names are covered; the remaining 19 have no public PDB and nothing more can be
 downloaded for them.
 
 Covered includes the core modules (`MsMpEng.exe`, `MpClient.dll`, `MpRtp.dll`,
 `MpSvc.dll`, `MpOAV.dll`, `MpCmdRun.exe`, `NisSrv.exe`, `MpDefenderCoreService.exe`),
-all 4 kernel drivers (`WdFilter`, `WdBoot`, `WdDevFlt`, `WdNisDrv`), `amsi.dll`,
-`amsiproxy.dll`, `smartscreen.exe`, and `MPSSVC.dll`.
+the kernel drivers (`WdFilter`, `WdBoot`, `WdDevFlt`, `WdNisDrv`, and `ksld.sys` the
+signature driver), the Windows Security frontend (`SecurityHealthService/Host/Systray`),
+`amsi.dll`, `amsiproxy.dll`, `smartscreen.exe`, and `MPSSVC.dll`.
 
 The 19 names with no public PDB fall into two groups:
 - Microsoft does not publish them: the scan engine (`mpengine.dll`,
@@ -90,7 +99,7 @@ Requires the Windows SDK Debugging Tools (`symchk.exe`).
 
 ## Notes for this repository
 
-- Binaries and PDBs are large (about 435 MB total). If this is committed directly,
+- Binaries and PDBs are large (about 440 MB total). If this is committed directly,
   consider Git LFS for `binaries/` and `symbols/`, or keep them out of version
   control and treat this folder as a regeneratable cache.
 - An older engine build (`Platform\4.18.26040.7-0`) is also present on the source
